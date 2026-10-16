@@ -46,4 +46,16 @@ jobs:
           ls -l packages/*.deb
           test "$(ls packages/*.deb | wc -l | tr -d ' ')" -eq 2
 
-      - name: Up​​​​​​​​​​​​​​​​
+      - name: Upload debs
+        uses: actions/upload-artifact@v4
+        with:
+          name: glitchframe-debs
+          path: packages/*.deb
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" packages/*.deb --title "GlitchFrame $GITHUB_REF_NAME" --generate-notes
