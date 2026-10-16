@@ -1,0 +1,9 @@
+Package: com.glitchframe.glitchframe
+Name: GlitchFrame
+Version: 0.1.0
+Depends: mobilesubstrate (>= 0.9.5000), com.opa334.ccsupport, firmware (>= 15.0)
+Architecture: iphoneos-arm
+Section: Tweaks
+Description: glitch d'écran aléatoire et temporaire, tuile Control Center, aucune écriture dans Photos
+Author: GlitchFrame
+Maintainer: GlitchFrame
