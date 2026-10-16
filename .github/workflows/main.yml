@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Theos
+        uses: waruhachi/theos-action@v2.6.3
+        with:
+          theos-src: 'roothide/theos'
+          theos-branch: 'master'
+          remotelog: 'false'
+          libgcuniversal: 'false'
+          altlist: 'false'
+          comet: 'false'
+          orion: 'false'
+
+      - name: Build rootless
+        run: make clean package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Keep rootless deb
+        run: |
+          mkdir -p "$RUNNER_TEMP/debs"
+          cp packages/*.deb "$RUNNER_TEMP/debs/"
+
+      - name: Build roothide
+        run: make clean package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide
+
+      - name: Collect debs
+        run: |
+          cp "$RUNNER_TEMP/debs/"*.deb packages/
+          ls -l packages/*.deb
+          test "$(ls packages/*.deb | wc -l | tr -d ' ')" -eq 2
+
+      - name: Up​​​​​​​​​​​​​​​​
